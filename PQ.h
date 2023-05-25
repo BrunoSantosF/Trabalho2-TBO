@@ -4,8 +4,10 @@
 #include <stdbool.h>
 #include "Item.h"
 
-void PQ_init(int maxN); // cria uma min PQ com capacidade maxN
-void PQ_insert(Item);   // Insere Item na PQ. A maior prioridade é a do Item com menor campo 'value'
+typedef struct filaPrioridade fp;
+
+fp* PQ_init(int maxN); // cria uma min PQ com capacidade maxN
+void PQ_insert(fp* f, Item v);   // Insere Item na PQ. A maior prioridade é a do Item com menor campo 'value'
 Item PQ_delmin();       // Remove Item com menor campo 'value' da PQ
 void PQ_decrease_key(int id, double value); // Muda a prioridade do nó com identificador 'id' para 'value'
 Item PQ_min();          // Retorna Item com menor campo 'value' da PQ

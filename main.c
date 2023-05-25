@@ -11,8 +11,8 @@ int main(int argc, char  ** argv){
       return 1;
   }
 
-  char *nomeArquivoEntrada = argv[1];
-  char *nomeArquivoSaida = argv[2];
+  char * nomeArquivoEntrada = argv[1];
+  char * nomeArquivoSaida = argv[2];
 
   Dados * dados = leituraArquivoEntrada(nomeArquivoEntrada);
 
