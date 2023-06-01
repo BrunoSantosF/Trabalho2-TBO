@@ -15,24 +15,25 @@ static void swap(fp* f, int i, int j) {
     f->mapa[id(f->fila[j])] = j;
 }
 
-void fix_up(fp* f, Item *a, int k) {
-    while (k > 1 && more(a[k/2], a[k])) {
-        swap(f, k, k/2);
-        k = k/2;
+void fix_up(fp* f, int k) {
+    while (k > 1 && more(f->fila[(k-1)/2], f->fila[k])) {
+        swap(f, k, (k-1)/2);
+        k = (k-1)/2;
     }
 }
 
-void fix_down(fp* f, Item *a, int sz, int k){
+void fix_down(fp* f, int sz, int k){
   while (2*k <= sz) {
     int j = 2*k;
-    if (j < sz && more(a[j], a[j+1])){
+    //encontra qual é o maior filho
+    if (j < sz && more(f->fila[j+1], f->fila[j+2])){
       j++;
     }
-    if (!more(a[k], a[j])) {
+    if (!more(f->fila[k], f->fila[j+1])) {
       break;
     }
-    swap(f ,k, j);
-    k = j;
+    swap(f ,k, j+1);
+    k = j+1;
   }
 }
 
@@ -48,22 +49,21 @@ void PQ_insert(fp* f, Item v) {
     f->N++;
     f->fila[f->N] = v;
     f->mapa[id(v)] = f->N;
-    fix_up(f, &v, f->N);
+    fix_up(f, f->N);
 }
 
 Item PQ_delmin(fp* f){
-    Item min = f->fila[1];
-    swap(f, 1, f->N);
+    Item min = f->fila[0];
+    swap(f, 0, f->N);
     f->N--;
-    fix_down(f, &min, f->N, 1);
+    fix_down(f, f->N, 0);
     return min;
 }
 
 Item PQ_min(fp* f) {
-    return f->fila[1];
+    return f->fila[0];
 }
 
-//TODO: entender isso aqui
 void PQ_decrease_key(fp* f, int id, double value) {
     int i = f->mapa[id];
     value(f->fila[i]) = value;
