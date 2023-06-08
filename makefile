@@ -2,7 +2,10 @@ compile: dados filaPrioridade pilha dijkstra
 	@gcc -o trab2 main.c *.o
 
 all: clean compile
-	@./trab2 entradas/menor.csv saida.txt
+	# @./trab2 entradas/menor.csv saida.txt
+	# @./trab2 entradas/entrada10.csv saida.txt
+	@./trab2 entradas/entrada50.csv saida.txt
+	# @./trab2 entradas/entrada100.csv saida.txt
 
 dados: 
 	@gcc -c Dados.c
@@ -18,7 +21,9 @@ dijkstra:
 
 
 valgrind: clean compile
-	@valgrind ./trab2 entradas/menor.csv saida.txt
+	# @valgrind ./trab2 entradas/menor.csv saida.txt
+	# @ valgrind ./trab2 entradas/entrada10.csv saida.txt
+	@ valgrind ./trab2 entradas/entrada100.csv saida.txt
 
 test: clean
 	@gcc -c FilaPrioridade.c
