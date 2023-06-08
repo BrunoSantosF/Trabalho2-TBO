@@ -1,9 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "Leitura.h"
+#include "Dados.h"
 #include "Dijkstra.h"
-
 
 //TODO: não precisa de um struct para isso aqui
 struct dados {
@@ -14,26 +13,28 @@ struct dados {
   int VeloInicial; //velocidade media inicial
   
   //TODO: trocar para double em todo o projeto
-  float ** VetorArestas; //vetor que contém (vetice origem, vertice destino, distancia entre os nós)[3]
+  double ** VetorArestas; //vetor que contém (vetice origem, vertice destino, distancia entre os nós)[3]
   
   int ** VetorTrafego; //vetor com informacoes do trafego ao longo da viagem(instante de tempo[0], aresta origem[1], aresta destino[2], velocidade media nova[3])
   int tamanhoVetorTrafego; // tamanho do vetor de trafego
 };
 
-//TODO: essa função tem que ser apagada antes de entregar o trabalho (debug)
-void ImprimirDados(Dados * dados){
+//TODO: essa função tinha q ir pra main de alguma maneira
+void imprimirDados(Dados * dados){
+  
+  int i, k=0;
+  int tamanhoCaminho=0;
+  int * caminho = calculaMenorCaminho(dados->VetorArestas, dados->M, dados->N, dados->S, dados->T, &tamanhoCaminho);
 
-  // printf("%d %d %d %d %d\n", dados->N,dados->M,dados->S,dados->T,dados->VeloInicial);
+  int origem = dados->S;
+  for(i=1;i<tamanhoCaminho;i++) {
+    while(dados->VetorArestas[k][1]!=caminho[i]) k++;
 
-  // for (int i = 0; i < dados->M; i ++){
-  //   printf("%.0f %.0f %.2f \n",dados->VetorArestas[i][0],dados->VetorArestas[i][1],dados->VetorArestas[i][2]);
-  // }
+    printf("passo %d: ir de %d até %d (%lf km a %lf km/h)\n", i, origem, caminho[i], dados->VetorArestas[k][2]/1000, dados->VetorArestas[k][3]);
+    origem = caminho[i];
+  }
 
-  // for (int i = 0; i < dados->tamanhoVetorTrafego; i ++){
-  //   printf("%d %d %d %d\n",dados->VetorTrafego[i][0],dados->VetorTrafego[i][1],dados->VetorTrafego[i][2],dados->VetorTrafego[i][3]);
-  // }
-
-  menorDistancia(dados->VetorArestas, dados->M, dados->S, dados->T, dados->VeloInicial);
+  free(caminho);
 }
 
 
@@ -53,15 +54,16 @@ Dados * leituraArquivoEntrada(char * entrada){
 
   fscanf(arquivo, "%d;%d\n",&dados->N,&dados->M);
   fscanf(arquivo, "%d;%d\n",&dados->S,&dados->T);
-  fscanf(arquivo, "%d\n",&dados->VeloInicial);
+  fscanf(arquivo, "%d\n",&dados->VeloInicial); //TODO: talvez de pra tirar essa variavel
 
   //alocando valores no vetor de arestas
-  dados->VetorArestas = calloc(dados->M, sizeof(float *));
+  dados->VetorArestas = calloc(dados->M, sizeof(double *));
   
   int i;
   for (i = 0; i < dados->M; i++){
-    dados->VetorArestas[i] = calloc(3,sizeof(float));
-    fscanf(arquivo, "%f;%f;%f\n",&dados->VetorArestas[i][0],&dados->VetorArestas[i][1],&dados->VetorArestas[i][2]);
+    dados->VetorArestas[i] = calloc(4,sizeof(double));
+    fscanf(arquivo, "%lf;%lf;%lf\n",&dados->VetorArestas[i][0],&dados->VetorArestas[i][1],&dados->VetorArestas[i][2]);
+    dados->VetorArestas[i][3] = dados->VeloInicial;
   }
 
   //alocando vetor de trafego 
@@ -75,4 +77,13 @@ Dados * leituraArquivoEntrada(char * entrada){
   fclose(arquivo);
 
   return dados;
+}
+
+void liberaDados(Dados * dados) {
+  int i;
+  for (i = 0; i < dados->M; i++) free(dados->VetorArestas[i]);
+  free(dados->VetorArestas);
+  for (i = 0; i < dados->tamanhoVetorTrafego; i++) free(dados->VetorTrafego[i]);
+  free(dados->VetorTrafego);
+  free(dados);
 }

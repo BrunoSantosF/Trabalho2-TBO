@@ -5,6 +5,7 @@ typedef struct dados Dados;
 
 Dados * leituraArquivoEntrada(char * entrada);
 
-void ImprimirDados(Dados * dados);
+void imprimirDados(Dados * dados);
+void liberaDados(Dados * dados);
 
 #endif

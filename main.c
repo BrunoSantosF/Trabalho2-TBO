@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "Leitura.h"
+#include "Dados.h"
 #include "FilaPrioridade.h"
 
 
@@ -17,9 +17,8 @@ int main(int argc, char  ** argv){
 
   Dados * dados = leituraArquivoEntrada(nomeArquivoEntrada);
 
-  ImprimirDados(dados);
+  imprimirDados(dados);
 
-  
-
+  liberaDados(dados);
   return 0;
 }
