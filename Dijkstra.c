@@ -12,11 +12,11 @@ int * calculaMenorCaminho(double ** distancias, int qtdDistancias, int qtdNo, in
   double * temposDePercurso = calloc(qtdNo+1, sizeof(double));
   int * verticesAnteriores = calloc(qtdNo+1, sizeof(int));  
   fp * Q = PQ_init(qtdNo);
+  
   // populando a heap com os tempos de deslocamento (distancia * velocidade)
   for(i=1;i<qtdNo+1;i++) {
     if (i!=origem) temposDePercurso[i] = INFINITY;
     else temposDePercurso[origem] = 0.0;
-
     PQ_insert(Q, make_item(i, temposDePercurso[i])); 
   }
 
