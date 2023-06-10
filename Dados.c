@@ -10,7 +10,6 @@ struct dados {
   int M; // numero de arestas
   int S; // nó de origem
   int T; // nó de destino 
-  int VeloInicial; //velocidade media inicial
   double ** VetorArestas; //vetor que contém (vetice origem, vertice destino, distancia entre os nós)[3]
   int ** VetorTrafego; //vetor com informacoes do trafego ao longo da viagem(instante de tempo[0], aresta origem[1], aresta destino[2], velocidade media nova[3])
   int tamanhoVetorTrafego; // tamanho do vetor de trafego
@@ -19,33 +18,35 @@ struct dados {
 //TODO: essa função tinha q ir pra main de alguma maneira
 void imprimirDados(Dados * dados){
   
-  int i=dados->S, t=0;
-  int tamanhoCaminho=0;
+  int i=1, t=0, tamanhoCaminho=0;
   int * caminho = calculaMenorCaminho(dados->VetorArestas, dados->M, dados->N, dados->S, dados->T, &tamanhoCaminho);
 
-  int origem = dados->S;
-  double tempo = 0.0;
-  int interrup=0;
+  int origem = dados->S,  interrup=0;
+  double tempo = 0.0, distancia = 0.0;
 
   for(i=1;i<tamanhoCaminho;i++) {
-
-    // printf("\n");for(int j=1;j<tamanhoCaminho;j++) printf("%d ", caminho[j]); printf("\n");
-    // printf("tempo: %lf prim interrp: %d\n", tempo, dados->VetorTrafego[t][0]);
     
-    origem = caminho[i];
-    printf("%d;", origem);
-    if (origem == dados->S) continue;
-
+    if (caminho[i] == dados->S) {
+      imprimeVertice(origem, dados->T);
+      continue;
+    }
+    
     //TODO: procurar a distancia desse jeito pode ser muito ineficiente
     int k=0;
-    while(dados->VetorArestas[k][1]!=caminho[i] && dados->VetorArestas[k][0]!=origem) k++;
+    while(dados->VetorArestas[k][0]!=origem || dados->VetorArestas[k][1]!=caminho[i]) k++;
 
+    origem = caminho[i];
+    imprimeVertice(origem, dados->T);
+
+    // acumulando a distancia percorrida
+    distancia += dados->VetorArestas[k][2]/1000;
+    
     // calculando o tempo atual
     tempo+=((dados->VetorArestas[k][2]/1000) / dados->VetorArestas[k][3]) * 3600;
 
     // verificando se houve mudança no trafego no tempo atual
     while (t<dados->tamanhoVetorTrafego && tempo>=dados->VetorTrafego[t][0]) {
-      // printf("%d interrup em %d (%d->%d: %d)\n", interrup++, dados->VetorTrafego[t][0], dados->VetorTrafego[t][1], dados->VetorTrafego[t][2], dados->VetorTrafego[t][3]);
+
       // caso tenha ocorrido mudança, deve-se procurar a aresta que ocorreu a mudança
       int x=0;
       while (dados->VetorArestas[x][0] != dados->VetorTrafego[t][1] || dados->VetorArestas[x][1] != dados->VetorTrafego[t][2]) x++;
@@ -53,16 +54,30 @@ void imprimirDados(Dados * dados){
 
       // atualiza velocidade da aresta
       dados->VetorArestas[x][3] = dados->VetorTrafego[t][3];
-      
+
       // recria o caminho
       free(caminho);
       caminho = calculaMenorCaminho(dados->VetorArestas, dados->M, dados->N, origem, dados->T, &tamanhoCaminho);
       i=1;
-      // while(caminho[i]!=origem) i++;
+      
       t++;
     };
   }
+  printf("%lf\n", distancia);
+  imprimeTempo(tempo);
   free(caminho);
+}
+
+void imprimeTempo(double tempoEmSegundos){
+  int horas = (int)(tempoEmSegundos/3600);
+  int minutos = (int)(((int)(tempoEmSegundos)%3600)/60);
+  double segundos = tempoEmSegundos - 60*minutos - 3600*horas;
+  printf("%02d:%02d:%lf\n", horas, minutos, segundos);
+}
+
+void imprimeVertice(int vertice, int limite) {
+  if (vertice!=limite) printf("%d;", vertice);
+  else printf("%d\n", vertice);
 }
 
 
@@ -79,10 +94,11 @@ Dados * leituraArquivoEntrada(char * entrada){
   }
   fseek(arquivo, 0, SEEK_SET); //retorno para início do arquivo
 
-
   fscanf(arquivo, "%d;%d\n",&dados->N,&dados->M);
   fscanf(arquivo, "%d;%d\n",&dados->S,&dados->T);
-  fscanf(arquivo, "%d\n",&dados->VeloInicial); //TODO: talvez de pra tirar essa variavel
+  
+  int VeloInicial;
+  fscanf(arquivo, "%d\n",&VeloInicial); //TODO: talvez de pra tirar essa variavel
 
   //alocando valores no vetor de arestas
   dados->VetorArestas = calloc(dados->M, sizeof(double *));
@@ -91,7 +107,7 @@ Dados * leituraArquivoEntrada(char * entrada){
   for (i = 0; i < dados->M; i++){
     dados->VetorArestas[i] = calloc(4,sizeof(double));
     fscanf(arquivo, "%lf;%lf;%lf\n",&dados->VetorArestas[i][0],&dados->VetorArestas[i][1],&dados->VetorArestas[i][2]);
-    dados->VetorArestas[i][3] = dados->VeloInicial;
+    dados->VetorArestas[i][3] = VeloInicial;
   }
 
   //alocando vetor de trafego 

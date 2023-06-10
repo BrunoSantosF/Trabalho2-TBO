@@ -5,26 +5,9 @@
 
 #define INFINITY 10000000.0 //TODO: mudar essa representação depois
 
-static int compare(const void*a, const void *b){
-  if ((*(double**)a)[0] == (*(double**)b)[0]) return (*(double**)a)[1] > (*(double**)b)[1];
-  
-  return (*(double**)a)[0] > (*(double**)b)[0];
-}
-
-void ordenarDistancias(double ** distancias, int qtdDistancias){
-  // ordenação de distancias leva em conta apenas o primeiro no de cada aresta
-  qsort(distancias, qtdDistancias, sizeof(double*), compare);
-}
-
 int * calculaMenorCaminho(double ** distancias, int qtdDistancias, int qtdNo, int origem, int destino, int * tamanhoCaminho){
   int i;
   
-  //TODO: usei por um momento mas pode tirar depois
-  // ordenarDistancias(distancias, qtdDistancias);
-
-  // TODO: debug (retirar depois)
-  // for(i=0;i<qtdDistancias;i++) printf("[%lf][%lf][%lf][%lf]\n", distancias[i][0], distancias[i][1], distancias[i][2], distancias[i][3]);
-
   // declarações de variáveis de controle e da heap para o algoritmo
   double * temposDePercurso = calloc(qtdNo+1, sizeof(double));
   int * verticesAnteriores = calloc(qtdNo+1, sizeof(int));  
