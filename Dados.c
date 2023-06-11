@@ -25,90 +25,75 @@ void leituraParametros(FILE * entrada, int * N, int * M, int * S, int * T) {
 }
 
 
-double *** leituraArestas(FILE * entrada, int qtd){
+void leituraArestas(FILE * entrada, double *** arestas, int qtd){
 
   //alocando vetor de arestas onde cada item é um vetor com [origem, destino, distancia, velocidade]
-  double *** arestas = calloc(qtd+1, sizeof(double **));
+  *arestas = calloc(qtd, sizeof(double *));
   
-  double veloInicial;
-  fscanf(entrada, "%lf\n", &veloInicial); 
+  int veloInicial;
+  fscanf(entrada, "%d\n", &veloInicial); 
 
   int i;
   for (i = 0; i < qtd; i++){
-    int origem, destino;
-    double distancia;
-    fscanf(entrada, "%d;%d;%lf\n", &origem, &destino, &distancia);
-
-    if (arestas[origem]==NULL) arestas[origem] = calloc(qtd+1, sizeof(double));
-    
-    double * aresta = malloc(sizeof(double) * 2);
-    aresta[0] = distancia;
-    aresta[1] = veloInicial;
-
-    arestas[origem][destino] = aresta;
+    (*arestas)[i] = calloc(4,sizeof(double));
+    fscanf(entrada, "%lf;%lf;%lf\n", &(*arestas)[i][0], &(*arestas)[i][1], &(*arestas)[i][2]);
+    (*arestas)[i][3] = veloInicial;
   }
-
-  return arestas;
 }
 
-int ** leituraTrafegos(FILE * entrada, int * qtd, int numLinhas, int numArestas) {
+void leituraTrafegos(FILE * entrada, int *** trafego, int * qtd, int numLinhas, int numArestas) {
   
   //alocando vetor de trafego 
   *qtd = numLinhas - (3 + numArestas); //tamanho do vetor de trafego
-  int ** trafego = calloc(*qtd, sizeof(int *));
+  *trafego = calloc(*qtd, sizeof(int *));
   
   int i;
   for (i = 0; i < *qtd; i++){
-    trafego[i] = calloc(4,sizeof(int));
-    fscanf(entrada,"%d;%d;%d;%d\n", &trafego[i][0], &trafego[i][1], &trafego[i][2], &trafego[i][3]);
+    (*trafego)[i] = calloc(4,sizeof(int));
+    fscanf(entrada,"%d;%d;%d;%d\n", &(*trafego)[i][0], &(*trafego)[i][1], &(*trafego)[i][2], &(*trafego)[i][3]);
   }
-
-  return trafego;
 }
 
-void processaDados(FILE * saida, double *** arestas, int M, int N, int S, int T, int ** trafego, int tamanhoTrafego) {
+void processaDados(FILE * saida, double ** arestas, int M, int N, int S, int T, int ** trafego, int tamanhoTrafego) {
   
-  int i=1, t=0, tamanhoCaminho=0, origem = S, destino = S;
+  int i=1, t=0, tamanhoCaminho=0, origem = S;
   int * caminho = calculaMenorCaminho(arestas, M, N, S, T, &tamanhoCaminho);
+
   double tempo = 0.0, distancia = 0.0;
 
-  // iterando pelo vetor do caminho recem calculado
   for(i=1;i<tamanhoCaminho;i++) {
-    
-    // se for o primeiro vertice do caminho (origem), apenas imprima o vertice
     if (caminho[i] == S) {
       imprimeVertice(saida, origem, T);
       continue;
     }
     
-    // atualizando destino
-    destino = caminho[i];
+    int k=0;
+    while(arestas[k][0]!=origem || arestas[k][1]!=caminho[i]) k++;
 
-    // acumulando a distancia percorrida
-    distancia += (arestas[origem][destino][0])/1000;
-    
-    // calculando o tempo atual
-    tempo+=((arestas[origem][destino][0]/1000) / arestas[origem][destino][1]) * 3600;
-
-    // atualizando a nova origem e imprimindo
     origem = caminho[i];
     imprimeVertice(saida, origem, T);
 
+    // acumulando a distancia percorrida
+    distancia += arestas[k][2]/1000;
+    
+    // calculando o tempo atual
+    tempo+=((arestas[k][2]/1000) / arestas[k][3]) * 3600;
+
     // verificando se houve mudança no trafego no tempo atual
     while (t<tamanhoTrafego && tempo>=trafego[t][0]) {
-      
-      //atualização da nova velocidade de trafego
-      int origemTrafego = trafego[t][1];
-      int destinoTrafego = trafego[t][2];
-      int velocidadeTrafego = trafego[t][3];
-      arestas[origemTrafego][destinoTrafego][1] = velocidadeTrafego;
 
-      // recria o caminho e zera a variável i (para começar o novo caminho do inicio)
+      // caso tenha ocorrido mudança, deve-se procurar a aresta que ocorreu a mudança
+      int x=0;
+      while (arestas[x][0] != trafego[t][1] || arestas[x][1] != trafego[t][2]) x++;
+
+      // atualiza velocidade da aresta
+      arestas[x][3] = trafego[t][3];
+
+      // recria o caminho
       free(caminho);
       caminho = calculaMenorCaminho(arestas, M, N, origem, T, &tamanhoCaminho);
       i=1;
       
-      // incremento no vetor de trafegos
       t++;
     };
   }
@@ -130,13 +115,9 @@ void imprimeVertice(FILE * arquivo, int vertice, int limite) {
   else fprintf(arquivo, "%d\n", vertice);
 }
 
-void liberaDados(double *** arestas, int N, int ** trafego, int tamanhoTrafego){
-  int i, j;
-  for(i=0;i<N+1;i++) {
-    if (arestas[i] == NULL) continue;
-    for(j=0;j<N+1;j++) if (arestas[i][j] != NULL) free(arestas[i][j]);
-    free(arestas[i]);
-  }
+void liberaDados(double ** arestas, int M, int ** trafego, int tamanhoTrafego){
+  int i;
+  for(i=0;i<M;i++) free(arestas[i]);
   free(arestas);
 
   for(i=0;i<tamanhoTrafego;i++) free(trafego[i]);

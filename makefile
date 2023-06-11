@@ -15,7 +15,6 @@ entrada100: clean compile
 	@./trab2 entradas/entrada100.csv saidas/saida100.csv
 	-diff gabarito/saida100.csv saidas/saida100.csv
 
-all: menor entrada10 entrada50 entrada100
 
 dados: 
 	@gcc -c Dados.c
