@@ -1,9 +1,6 @@
 #ifndef ITEM_H
 #define ITEM_H
 
-/*CÓDIGO DISPONIBILIZADO PELO PROFESSOR*/
-
-
 typedef struct {
   int id;           // identificador do nó
   double value;     // valor associado ao nó

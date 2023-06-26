@@ -6,7 +6,7 @@
 
 #define INFINITY DBL_MAX
 
-int * calculaMenorCaminho(double ** distancias, int qtdDistancias, int qtdNo, int origem, int destino, int * tamanhoCaminho){
+int * calculaMenorCaminho(double *** distancias, int qtdDistancias, int qtdNo, int origem, int destino, int * tamanhoCaminho){
   int i;
   
   // declarações de variáveis de controle e da heap para o algoritmo
@@ -25,23 +25,18 @@ int * calculaMenorCaminho(double ** distancias, int qtdDistancias, int qtdNo, in
   while (!PQ_empty(Q)) {
     Item * u = PQ_delmin(Q);
 
-    // loop para procurar o vizinhos (nós alcançáveis pelo nó atual)
-    for(i=0;i<qtdDistancias;i++) { 
+    for (i=1;i<qtdNo+1;i++){
+      if (distancias[id(u)][i] == NULL) continue;
 
-      // verificando se é vizinho de u
-      if (distancias[i][0] == id(u)) {
-        
-        // calculando o tempo de deslocamento entre a origem inicial e o vizinho, passando pelo noh atual
-        double alt = temposDePercurso[id(u)] + ((distancias[i][2]/1000) / distancias[i][3]);
-        
-        // verificando se o caminho até o noh vizinho, passando pelo noh atual, é de fato o menor caminho possível ate entao
-        int v = distancias[i][1];
-        if (alt < temposDePercurso[v]) {
-          // caso seja o menor caminho, atualize o caminho ate entao
-          temposDePercurso[v] = alt;
-          verticesAnteriores[v] = id(u);
-          PQ_decrease_key(Q, v, alt);
-        }
+      // calculando o tempo de deslocamento entre a origem inicial e o vizinho, passando pelo noh atual
+      double alt = temposDePercurso[id(u)] + ((distancias[id(u)][i][0]/1000) / distancias[id(u)][i][1]);
+      
+      // verificando se o caminho até o noh vizinho, passando pelo noh atual, é de fato o menor caminho possível ate entao
+      if (alt < temposDePercurso[i]) {
+        // caso seja o menor caminho, atualize o caminho ate entao
+        temposDePercurso[i] = alt;
+        verticesAnteriores[i] = id(u);
+        PQ_decrease_key(Q, i, alt);
       }
     }
 
