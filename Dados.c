@@ -61,12 +61,14 @@ void processaDados(FILE * saida, double ** arestas, int M, int N, int S, int T, 
 
   double tempo = 0.0, distancia = 0.0;
 
+  // iterando pelo caminho recem gerado
   for(i=1;i<tamanhoCaminho;i++) {
     if (caminho[i] == S) {
       imprimeVertice(saida, origem, T);
       continue;
     }
     
+    // procurando a aresta que tem a atual origem e o atual destino (caminho[i])
     int k=0;
     while(arestas[k][0]!=origem || arestas[k][1]!=caminho[i]) k++;
 

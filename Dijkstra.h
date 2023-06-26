@@ -2,8 +2,6 @@
 #define DIJSKTRA_H
 #include "Pilha.h"
 
-
-
 /// @brief dados todos os nós e suas distâncias, obtém o menor caminho entre dois nós
 /// @param distancias vetor com as distancias entre os nós
 /// @param qtdDistancias tamanho do vetor de distancias

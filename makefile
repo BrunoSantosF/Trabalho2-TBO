@@ -27,7 +27,7 @@ dijkstra:
 
 
 valgrind: clean compile
-	@ valgrind ./trab2 entradas/entrada100.csv saidas/saida100.csv
+	@ valgrind ./trab2 entradas/entrada10.csv saidas/saida10.csv
 
 clean:
 	@rm -rf *.o trab2
