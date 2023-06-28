@@ -1,6 +1,6 @@
 .vscode
 *.o
 trab2
-entradas/
-saidas/
+entradas
+saidas
 gabarito
