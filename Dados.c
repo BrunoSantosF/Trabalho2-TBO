@@ -91,23 +91,30 @@ void processaDados(FILE * saida, double *** arestas, int M, int N, int S, int T,
     origem = caminho[i];
     imprimeVertice(saida, origem, T);
 
+    int mudouCaminho = 0;
     // verificando se houve mudança no trafego no tempo atual
     while (t<tamanhoTrafego && tempo>=trafego[t][0]) {
       
-      //atualização da nova velocidade de trafego
+      // atualização da nova velocidade de trafego
       int origemTrafego = trafego[t][1];
       int destinoTrafego = trafego[t][2];
       int velocidadeTrafego = trafego[t][3];
       arestas[origemTrafego][destinoTrafego][1] = velocidadeTrafego;
 
-      // recria o caminho e zera a variável i (para começar o novo caminho do inicio)
-      free(caminho);
-      caminho = calculaMenorCaminho(arestas, M, N, origem, T, &tamanhoCaminho);
-      i=1;
+      // sinalizando que o caminho foi alterado
+      mudouCaminho=1;
       
       // incremento no vetor de trafegos
       t++;
-    };
+    }
+    
+    if (mudouCaminho) {
+      free(caminho);
+      caminho = calculaMenorCaminho(arestas, M, N, origem, T, &tamanhoCaminho);
+      i=1;
+      mudouCaminho=0;
+    }
+
   }
 
   fprintf(saida, "%lf\n", distancia);
