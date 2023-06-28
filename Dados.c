@@ -81,6 +81,9 @@ void processaDados(FILE * saida, double ** arestas, int M, int N, int S, int T, 
     // calculando o tempo atual
     tempo+=((arestas[k][2]/1000) / arestas[k][3]) * 3600;
 
+    // sinalização de que alguma aresta foi alterada
+    int mudouCaminho = 0;
+
     // verificando se houve mudança no trafego no tempo atual
     while (t<tamanhoTrafego && tempo>=trafego[t][0]) {
 
@@ -91,13 +94,20 @@ void processaDados(FILE * saida, double ** arestas, int M, int N, int S, int T, 
       // atualiza velocidade da aresta
       arestas[x][3] = trafego[t][3];
 
+      // sinalizando que mudou uma aresta
+      mudouCaminho = 1;
+      
+      t++;
+    }
+
+    if (mudouCaminho) {
       // recria o caminho
       free(caminho);
       caminho = calculaMenorCaminho(arestas, M, N, origem, T, &tamanhoCaminho);
       i=1;
       
-      t++;
-    };
+      mudouCaminho = 0;
+    }
   }
 
   fprintf(saida, "%lf\n", distancia);
