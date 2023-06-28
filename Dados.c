@@ -25,10 +25,9 @@ void leituraParametros(FILE * entrada, int * N, int * M, int * S, int * T) {
 }
 
 
-double *** leituraArestas(FILE * entrada, int qtd){
+double *** leituraArestas(FILE * entrada, int qtd, int qtdPontos){
 
-  //alocando vetor de arestas onde cada item é um vetor com [origem, destino, distancia, velocidade]
-  double *** arestas = calloc(qtd+1, sizeof(double **));
+  double *** arestas = calloc(qtdPontos, sizeof(double **));
   
   double veloInicial;
   fscanf(entrada, "%lf\n", &veloInicial); 
@@ -38,13 +37,11 @@ double *** leituraArestas(FILE * entrada, int qtd){
     int origem, destino;
     double distancia;
     fscanf(entrada, "%d;%d;%lf\n", &origem, &destino, &distancia);
-
-    if (arestas[origem]==NULL) arestas[origem] = calloc(qtd+1, sizeof(double));
+    if (arestas[origem]==NULL) arestas[origem] = calloc(qtdPontos, sizeof(double));
     
     double * aresta = malloc(sizeof(double) * 2);
     aresta[0] = distancia;
     aresta[1] = veloInicial;
-
     arestas[origem][destino] = aresta;
   }
 

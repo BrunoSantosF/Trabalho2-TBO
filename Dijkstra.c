@@ -26,7 +26,7 @@ int * calculaMenorCaminho(double *** distancias, int qtdDistancias, int qtdNo, i
     Item * u = PQ_delmin(Q);
 
     for (i=1;i<qtdNo+1;i++){
-      if (distancias[id(u)][i] == NULL) continue;
+      if (distancias[id(u)] == NULL || distancias[id(u)][i] == NULL) continue;
 
       // calculando o tempo de deslocamento entre a origem inicial e o vizinho, passando pelo noh atual
       double alt = temposDePercurso[id(u)] + ((distancias[id(u)][i][0]/1000) / distancias[id(u)][i][1]);
@@ -62,6 +62,6 @@ int * calculaMenorCaminho(double *** distancias, int qtdDistancias, int qtdNo, i
   free(temposDePercurso); 
   destroiPilha(pilha);
   PQ_finish(Q);
-  
+
   return caminho;
 }

@@ -33,7 +33,7 @@ int main(int argc, char  ** argv){
 
   // populando os vetores de dados
   leituraParametros(arquivoEntrada, &N, &M, &S, &T);
-  arestas = leituraArestas(arquivoEntrada, M);
+  arestas = leituraArestas(arquivoEntrada, M, N);
 
   trafego = leituraTrafegos(arquivoEntrada, &tamanhoTrafego, nmrLinhas, M);
   fclose(arquivoEntrada);
