@@ -3,8 +3,10 @@
 #include <string.h>
 #include "Dados.h"
 #include "FilaPrioridade.h"
+#include <time.h>
 
 int main(int argc, char  ** argv){
+  clock_t start = clock();
   if (argc != 3){
       printf("Erro: numero de argumentos invalido\n");
       return 1;
@@ -41,6 +43,7 @@ int main(int argc, char  ** argv){
   fclose(arquivoSaida);
   
   liberaDados(arestas, N, trafego, tamanhoTrafego);
-
+  clock_t end = clock();
+  printf("\033[1;31mTempo total: %f s (%s)\n\033[0m", (((double)(end-start))/CLOCKS_PER_SEC), nomeArquivoEntrada);
   return 0;
 }

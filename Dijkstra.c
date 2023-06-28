@@ -43,24 +43,23 @@ int * calculaMenorCaminho(double *** distancias, int qtdDistancias, int qtdNo, i
     free(u);
   }
 
-  // agora basta usar uma pilha para fazer o "traverse" do caminho
-  Pilha * pilha = criaPilhaVazia();
+  // criando o vetor de caminho
+  i=1;
+  int * caminhoInvertido = malloc(sizeof(int) * qtdDistancias);
+  
   *tamanhoCaminho=1;
   while (destino) {
-    push(pilha, destino);
+    caminhoInvertido[i++] = destino;
     destino = verticesAnteriores[destino];
     *tamanhoCaminho+=1;
   }
-
-  // criando o vetor de caminho
-  i=1;
-  int * caminho = malloc(sizeof(int) * (*tamanhoCaminho));
-  while(!pilhaVazia(pilha)) caminho[i++] = pop(pilha);
+  
+  int * caminho = malloc(sizeof(int) * qtdDistancias);
+  for(int j=0;j<*tamanhoCaminho;j++,i--) caminho[j] = caminhoInvertido[i];
 
   // liberando memoria e retornando caminho
   free(verticesAnteriores);
   free(temposDePercurso); 
-  destroiPilha(pilha);
   PQ_finish(Q);
 
   return caminho;

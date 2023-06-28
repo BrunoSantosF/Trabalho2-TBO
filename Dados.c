@@ -27,17 +27,17 @@ void leituraParametros(FILE * entrada, int * N, int * M, int * S, int * T) {
 
 double *** leituraArestas(FILE * entrada, int qtd, int qtdPontos){
 
-  double *** arestas = calloc(qtdPontos, sizeof(double **));
+  double *** arestas = calloc(qtdPontos+1, sizeof(double **));
   
-  double veloInicial;
+  double veloInicial=0.0;
   fscanf(entrada, "%lf\n", &veloInicial); 
 
   int i;
   for (i = 0; i < qtd; i++){
-    int origem, destino;
-    double distancia;
+    int origem=0, destino=0;
+    double distancia=0.0;
     fscanf(entrada, "%d;%d;%lf\n", &origem, &destino, &distancia);
-    if (arestas[origem]==NULL) arestas[origem] = calloc(qtdPontos, sizeof(double));
+    if (!arestas[origem]) arestas[origem] = calloc(qtdPontos+1, sizeof(double*));
     
     double * aresta = malloc(sizeof(double) * 2);
     aresta[0] = distancia;
@@ -85,16 +85,18 @@ void processaDados(FILE * saida, double *** arestas, int M, int N, int S, int T,
     distancia += (arestas[origem][destino][0])/1000;
     
     // calculando o tempo atual
-    tempo+=((arestas[origem][destino][0]/1000) / arestas[origem][destino][1]) * 3600;
+    tempo += ((arestas[origem][destino][0]/1000) / arestas[origem][destino][1]) * 3600;
 
     // atualizando a nova origem e imprimindo
     origem = caminho[i];
     imprimeVertice(saida, origem, T);
 
+    // variável que sinaliza alteração nas arestas
     int mudouCaminho = 0;
+    
     // verificando se houve mudança no trafego no tempo atual
     while (t<tamanhoTrafego && tempo>=trafego[t][0]) {
-      
+
       // atualização da nova velocidade de trafego
       int origemTrafego = trafego[t][1];
       int destinoTrafego = trafego[t][2];
@@ -107,7 +109,8 @@ void processaDados(FILE * saida, double *** arestas, int M, int N, int S, int T,
       // incremento no vetor de trafegos
       t++;
     }
-    
+
+    // caso tenha alterações, recalcule...
     if (mudouCaminho) {
       free(caminho);
       caminho = calculaMenorCaminho(arestas, M, N, origem, T, &tamanhoCaminho);
