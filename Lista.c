@@ -104,5 +104,6 @@ void liberaLista(Lista * lista) {
         free(atual);
         atual = prox;   
     }
+    
     free(lista);
 }

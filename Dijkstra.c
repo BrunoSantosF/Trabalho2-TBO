@@ -63,6 +63,7 @@ int * calculaMenorCaminho(Lista ** distancias, int qtdDistancias, int qtdNo, int
   for(int j=0;j<*tamanhoCaminho;j++,i--) caminho[j] = caminhoInvertido[i];
 
   // liberando memoria e retornando caminho
+  free(caminhoInvertido);
   free(verticesAnteriores);
   free(temposDePercurso); 
   PQ_finish(Q);
