@@ -1,4 +1,4 @@
-compile: pilha filaPrioridade dados dijkstra
+compile: lista filaPrioridade dados dijkstra
 	@gcc -o trab2 main.c *.o
 
 entrada10: clean compile
@@ -65,8 +65,8 @@ dados:
 	@gcc -c Dados.c
 filaPrioridade:
 	@gcc -c FilaPrioridade.c
-pilha:
-	@gcc -c Pilha.c
+lista:
+	@gcc -c Lista.c
 dijkstra:
 	@gcc -c Dijkstra.c
 

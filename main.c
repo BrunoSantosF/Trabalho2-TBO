@@ -17,7 +17,7 @@ int main(int argc, char  ** argv){
   int S;              // nó de origem
   int T;              // nó de destino 
 
-  double *** arestas;  // vetor que contém (vetice origem, vertice destino, distancia entre os nós)[3]
+  Lista ** arestas;  // vetor que contém (vetice origem, vertice destino, distancia entre os nós)[3]
   int ** trafego;     // vetor com informacoes do trafego ao longo da viagem(instante de tempo[0], aresta origem[1], aresta destino[2], velocidade media nova[3])
   int tamanhoTrafego; // tamanho do vetor de trafego
 
@@ -34,7 +34,6 @@ int main(int argc, char  ** argv){
   // populando os vetores de dados
   leituraParametros(arquivoEntrada, &N, &M, &S, &T);
   arestas = leituraArestas(arquivoEntrada, M, N);
-
   trafego = leituraTrafegos(arquivoEntrada, &tamanhoTrafego, nmrLinhas, M);
   fclose(arquivoEntrada);
 

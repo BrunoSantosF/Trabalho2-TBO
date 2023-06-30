@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <string.h>
 #include "Dados.h"
-#include "Dijkstra.h"
 
 int nmrLinhasArquivo(FILE * arquivo){
   char str[100];
@@ -25,24 +24,21 @@ void leituraParametros(FILE * entrada, int * N, int * M, int * S, int * T) {
 }
 
 
-double *** leituraArestas(FILE * entrada, int qtd, int qtdPontos){
+Lista ** leituraArestas(FILE * entrada, int qtd, int qtdPontos){
 
-  double *** arestas = calloc(qtdPontos+1, sizeof(double **));
+  Lista ** arestas = calloc(qtdPontos+1, sizeof(Lista *));
   
   double veloInicial=0.0;
   fscanf(entrada, "%lf\n", &veloInicial); 
 
   int i;
+  for(i=1;i<qtdPontos+1;i++) arestas[i] = inicializaLista();
+
   for (i = 0; i < qtd; i++){
     int origem=0, destino=0;
     double distancia=0.0;
     fscanf(entrada, "%d;%d;%lf\n", &origem, &destino, &distancia);
-    if (!arestas[origem]) arestas[origem] = calloc(qtdPontos+1, sizeof(double*));
-    
-    double * aresta = malloc(sizeof(double) * 2);
-    aresta[0] = distancia;
-    aresta[1] = veloInicial;
-    arestas[origem][destino] = aresta;
+    insereItem(arestas[origem], destino, veloInicial, distancia);
   }
 
   return arestas;
@@ -63,7 +59,7 @@ int ** leituraTrafegos(FILE * entrada, int * qtd, int numLinhas, int numArestas)
   return trafego;
 }
 
-void processaDados(FILE * saida, double *** arestas, int M, int N, int S, int T, int ** trafego, int tamanhoTrafego) {
+void processaDados(FILE * saida, Lista ** arestas, int M, int N, int S, int T, int ** trafego, int tamanhoTrafego) {
   
   int i=1, t=0, tamanhoCaminho=0, origem = S, destino = S;
   int * caminho = calculaMenorCaminho(arestas, M, N, S, T, &tamanhoCaminho);
@@ -71,21 +67,22 @@ void processaDados(FILE * saida, double *** arestas, int M, int N, int S, int T,
 
   // iterando pelo vetor do caminho recem calculado
   for(i=1;i<tamanhoCaminho;i++) {
-    
+
     // se for o primeiro vertice do caminho (origem), apenas imprima o vertice
     if (caminho[i] == S) {
       imprimeVertice(saida, origem, T);
       continue;
     }
     
+
     // atualizando destino
     destino = caminho[i];
 
     // acumulando a distancia percorrida
-    distancia += (arestas[origem][destino][0])/1000;
+    distancia += (getDistancia(arestas[origem], destino))/1000;
     
     // calculando o tempo atual
-    tempo += ((arestas[origem][destino][0]/1000) / arestas[origem][destino][1]) * 3600;
+    tempo += ((getDistancia(arestas[origem], destino))/1000) / getVelocidade(arestas[origem], destino) * 3600;
 
     // atualizando a nova origem e imprimindo
     origem = caminho[i];
@@ -101,7 +98,7 @@ void processaDados(FILE * saida, double *** arestas, int M, int N, int S, int T,
       int origemTrafego = trafego[t][1];
       int destinoTrafego = trafego[t][2];
       int velocidadeTrafego = trafego[t][3];
-      arestas[origemTrafego][destinoTrafego][1] = velocidadeTrafego;
+      mudaVelocidade(arestas[origemTrafego], destinoTrafego, velocidadeTrafego);
 
       // sinalizando que o caminho foi alterado
       mudouCaminho=1;
@@ -117,7 +114,6 @@ void processaDados(FILE * saida, double *** arestas, int M, int N, int S, int T,
       i=1;
       mudouCaminho=0;
     }
-
   }
 
   fprintf(saida, "%lf\n", distancia);
@@ -137,12 +133,11 @@ void imprimeVertice(FILE * arquivo, int vertice, int limite) {
   else fprintf(arquivo, "%d\n", vertice);
 }
 
-void liberaDados(double *** arestas, int N, int ** trafego, int tamanhoTrafego){
+void liberaDados(Lista ** arestas, int N, int ** trafego, int tamanhoTrafego){
   int i, j;
   for(i=0;i<N+1;i++) {
     if (arestas[i] == NULL) continue;
-    for(j=0;j<N+1;j++) if (arestas[i][j] != NULL) free(arestas[i][j]);
-    free(arestas[i]);
+    liberaLista(arestas[i]);
   }
   free(arestas);
 
